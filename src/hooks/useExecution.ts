@@ -62,7 +62,7 @@ export function useExecutionHistoryLength(tokenId: bigint | undefined) {
               topics: [
                 EXECUTION_RECORDED_TOPIC,
                 `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-              ] as any,
+              ] as any, // Type assertion
             })
 
             // Count only unique transactions
@@ -163,7 +163,7 @@ export function useLastExecutionRecord(tokenId: bigint | undefined) {
               topics: [
                 EXECUTION_RECORDED_TOPIC,
                 `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-              ] as any,
+              ] as any, // Type assertion
             })
 
             if (events.length > 0) {

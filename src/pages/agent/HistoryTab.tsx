@@ -69,7 +69,7 @@ export const AgentHistoryTab: React.FC<AgentHistoryTabProps> = ({ tokenId }) => 
             topics: [
               EXECUTION_RECORDED_TOPIC,
               `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-            ] as any,
+            ] as any, // Type assertion
           })
 
           allEvents.push(...events)

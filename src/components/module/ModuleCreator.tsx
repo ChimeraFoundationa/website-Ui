@@ -164,9 +164,9 @@ export function ModuleCreator() {
           console.log('Log topic[0]:', log.topics[0])
           console.log('Log topic[1]:', log.topics[1])
 
-          if (log.topics[0].toLowerCase() === moduleDeployedTopic) {
+          if (log.topics[0]?.toLowerCase() === moduleDeployedTopic) {
             // moduleAddress is the first indexed parameter (topic[1])
-            const contractAddr = '0x' + log.topics[1].slice(-40).toLowerCase()
+            const contractAddr = ('0x' + log.topics[1]?.slice(-40)).toLowerCase()
             console.log('✅ Found ModuleDeployed event! Contract address:', contractAddr)
             setDeployedContractAddress(contractAddr)
             return
@@ -222,27 +222,9 @@ export function ModuleCreator() {
           })
 
           // Get user's balance to find the token ID
-          const { address } = await import('viem')
-          const userAddress = address // This won't work, need to get from context
-          
-          // Alternative: query balanceOf and then tokenByIndex
-          const balance = await publicClient.readContract({
-            address: deployedContractAddress as `0x${string}`,
-            abi: cognitiveModuleABI,
-            functionName: 'balanceOf',
-            args: [address!],
-          })
-
-          if (balance > 0n) {
-            // Get the last token (assuming it's the one we just minted)
-            // In production, you'd want a more robust way to get the actual token ID
-            const tokenIndex = balance - 1n
-            
-            // Note: CognitiveModule might not have tokenByIndex, so we'll just use a placeholder
-            // and let the user select the correct token ID on the attach page
-            setMintedTokenId(tokenIndex.toString())
-            console.log('Found minted token ID:', tokenIndex.toString())
-          }
+          // Note: Can't use hooks here, so we skip token ID detection
+          // User will need to select token ID manually on attach page
+          console.log('Token ID detection skipped - user will select manually')
         } catch (err) {
           console.error('Error getting token ID:', err)
         }
