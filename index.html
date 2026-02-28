@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>marketplace</title>
+    <script>
+      // Buffer polyfill for browser
+      window.global = window.global || {};
+      window.Buffer = window.Buffer || class Buffer extends Uint8Array {
+        constructor(arg, encodingOrLength = 'utf8', encodingOrOffset) {
+          if (typeof arg === 'string') {
+            const bytes = new TextEncoder().encode(arg);
+            super(bytes.length);
+            this.set(bytes);
+          } else if (typeof arg === 'number') {
+            super(arg);
+          } else if (ArrayBuffer.isView(arg)) {
+            super(arg.buffer, arg.byteOffset, arg.byteLength);
+          } else if (Array.isArray(arg)) {
+            super(arg);
+          } else {
+            super(0);
+          }
+        }
+        static from(value, encodingOrLength = 'utf8') {
+          if (typeof value === 'string') {
+            const bytes = new TextEncoder().encode(value);
+            return Object.assign(new Buffer(bytes.length), bytes);
+          }
+          if (Array.isArray(value)) {
+            return Object.assign(new Buffer(value.length), value);
+          }
+          return Object.assign(new Buffer(value.length), value);
+        }
+        toString(encoding = 'utf8', start = 0, end = this.length) {
+          if (encoding === 'hex') {
+            return Array.from(this.slice(start, end)).map(b => b.toString(16).padStart(2, '0')).join('');
+          }
+          return new TextDecoder().decode(this.slice(start, end));
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
