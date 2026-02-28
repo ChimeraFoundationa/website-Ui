@@ -61,16 +61,19 @@ export const AgentHistoryTab: React.FC<AgentHistoryTabProps> = ({ tokenId }) => 
         const actualFromBlock = fromBlockChunk < startBlock ? startBlock : fromBlockChunk
 
         try {
-          // Fetch ExecutionRecorded events with topic filter
-          const events = await publicClient.getLogs({
+          // Fetch all events and filter manually
+          const chunkEvents = await publicClient.getLogs({
             address: contracts.executionRouter.address,
             fromBlock: actualFromBlock,
             toBlock: toBlock,
-            topics: [
-              EXECUTION_RECORDED_TOPIC,
-              `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-            ] as any, // Type assertion
           })
+
+          // Filter by event signature and plotId
+          const targetTopic = `0x${tokenId.toString(16).padStart(64, '0')}`
+          const events = chunkEvents.filter(event =>
+            event.topics[0]?.toLowerCase() === EXECUTION_RECORDED_TOPIC.toLowerCase() &&
+            event.topics[1]?.toLowerCase() === targetTopic.toLowerCase()
+          )
 
           allEvents.push(...events)
         } catch (err) {

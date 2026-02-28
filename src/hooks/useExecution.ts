@@ -54,16 +54,19 @@ export function useExecutionHistoryLength(tokenId: bigint | undefined) {
           const actualFromBlock = fromBlockChunk < startBlock ? startBlock : fromBlockChunk
 
           try {
-            // Fetch ExecutionRecorded events from ExecutionRouter
-            const events = await publicClient.getLogs({
+            // Fetch all events and filter manually (topics parameter not supported in viem v2)
+            const allEvents = await publicClient.getLogs({
               address: contracts.executionRouter.address,
               fromBlock: actualFromBlock,
               toBlock: toBlock,
-              topics: [
-                EXECUTION_RECORDED_TOPIC,
-                `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-              ] as any, // Type assertion
             })
+
+            // Filter by event signature and plotId
+            const targetTopic = `0x${tokenId.toString(16).padStart(64, '0')}`
+            const events = allEvents.filter(event =>
+              event.topics[0]?.toLowerCase() === EXECUTION_RECORDED_TOPIC.toLowerCase() &&
+              event.topics[1]?.toLowerCase() === targetTopic.toLowerCase()
+            )
 
             // Count only unique transactions
             events.forEach(event => {
@@ -155,16 +158,19 @@ export function useLastExecutionRecord(tokenId: bigint | undefined) {
           const actualFromBlock = fromBlockChunk < startBlock ? startBlock : fromBlockChunk
 
           try {
-            // Fetch ExecutionRecorded events from ExecutionRouter
-            const events = await publicClient.getLogs({
+            // Fetch all events and filter manually
+            const allEvents = await publicClient.getLogs({
               address: contracts.executionRouter.address,
               fromBlock: actualFromBlock,
               toBlock: toBlock,
-              topics: [
-                EXECUTION_RECORDED_TOPIC,
-                `0x${tokenId.toString(16).padStart(64, '0')}`, // plotId (indexed)
-              ] as any, // Type assertion
             })
+
+            // Filter by event signature and plotId
+            const targetTopic = `0x${tokenId.toString(16).padStart(64, '0')}`
+            const events = allEvents.filter(event =>
+              event.topics[0]?.toLowerCase() === EXECUTION_RECORDED_TOPIC.toLowerCase() &&
+              event.topics[1]?.toLowerCase() === targetTopic.toLowerCase()
+            )
 
             if (events.length > 0) {
               // Get the most recent event (last in the chunk)
