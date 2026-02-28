@@ -96,7 +96,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 symbol: 'AVAX',
                 decimals: 18,
               },
-              rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'
+              rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'],
               blockExplorerUrls: ['https://testnet.snowtrace.io'],
             }],
           })
